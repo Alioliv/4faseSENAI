@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react'
-import {
-  listarAgendamentos,
-  ordenarAgendamentos,
-  atividadeRecente
-} from '../services/agendamentoService'
+import { ordenarAgendamentos, atividadeRecente } from '../services/agendamentoService'
 
 const STATUS_LABEL = {
   pendente: 'Pendente',
-  confirmado: 'Confirmado',
   concluido: 'Concluído',
   cancelado: 'Cancelado'
 }
@@ -16,10 +11,20 @@ export default function GestaoAgendamentos() {
   const [agendamentos, setAgendamentos] = useState([])
   const [criterio, setCriterio] = useState('data')
   const [recentes, setRecentes] = useState([])
+  const [carregando, setCarregando] = useState(true)
 
   useEffect(() => {
-    setAgendamentos(ordenarAgendamentos(listarAgendamentos(), criterio))
-    setRecentes(atividadeRecente())
+    async function carregar() {
+      setCarregando(true)
+      const [lista, recentesLista] = await Promise.all([
+        ordenarAgendamentos(null, criterio),
+        atividadeRecente()
+      ])
+      setAgendamentos(lista)
+      setRecentes(recentesLista)
+      setCarregando(false)
+    }
+    carregar()
   }, [criterio])
 
   return (
@@ -34,32 +39,36 @@ export default function GestaoAgendamentos() {
         </select>
       </label>
 
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>Cliente</th>
-            <th>Profissional</th>
-            <th>Tipo</th>
-            <th>Data</th>
-            <th>Horário</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {agendamentos.map((a) => (
-            <tr key={a.id_agendamento}>
-              <td>{a.clienteNome}</td>
-              <td>{a.profissionalNome}</td>
-              <td>{a.tipo_servico}</td>
-              <td>{a.data_agendamento}</td>
-              <td>{a.horario}</td>
-              <td>{STATUS_LABEL[a.status] || a.status}</td>
+      {carregando ? (
+        <p className="empty-state">Carregando...</p>
+      ) : (
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Profissional</th>
+              <th>Tipo</th>
+              <th>Data</th>
+              <th>Horário</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {agendamentos.map((a) => (
+              <tr key={a.id_agendamento}>
+                <td>{a.clienteNome}</td>
+                <td>{a.profissionalNome}</td>
+                <td>{a.tipo_servico}</td>
+                <td>{a.data_agendamento}</td>
+                <td>{a.horario}</td>
+                <td>{STATUS_LABEL[a.status] || a.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
-      <h3>Atividade recente</h3>
+      <h3>Atividade recentes</h3>
       <ul className="historico-list">
         {recentes.map((a) => (
           <li key={a.id_agendamento}>

@@ -6,7 +6,12 @@ export default function Principal() {
   const [alertas, setAlertas] = useState([])
 
   useEffect(() => {
-    setAlertas(proximosAgendamentos())
+    async function carregar() {
+      try {
+        setAlertas(await proximosAgendamentos())
+      } catch { setAlertas([]) }
+    }
+    carregar()
   }, [])
 
   return (

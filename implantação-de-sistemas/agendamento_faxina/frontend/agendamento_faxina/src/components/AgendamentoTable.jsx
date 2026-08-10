@@ -1,13 +1,12 @@
 const STATUS_LABEL = {
   pendente: 'Pendente',
-  confirmado: 'Confirmado',
   concluido: 'Concluído',
   cancelado: 'Cancelado'
 }
 
 export default function AgendamentoTable({ agendamentos, onEditar, onExcluir }) {
   if (agendamentos.length === 0) {
-    return <p className="empty-state">Nenhum agendamento encontrado.</p>
+    return <p className="empty-state">Nenhum agendamento ..</p>
   }
 
   return (

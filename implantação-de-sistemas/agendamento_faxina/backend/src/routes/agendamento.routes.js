@@ -3,8 +3,6 @@ import * as agendamentoController from '../controllers/agendamento.controller.js
 
 const router = Router()
 
-// Precisa vir antes de "/:id", senão "proximos" seria interpretado
-// como um :id.
 router.get('/proximos', agendamentoController.proximos)
 
 router.get('/', agendamentoController.listar)
@@ -14,3 +12,4 @@ router.put('/:id', agendamentoController.editar)
 router.delete('/:id', agendamentoController.excluir)
 
 export default router
+

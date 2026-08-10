@@ -17,8 +17,15 @@ export default function AgendamentoForm({ agendamentoEmEdicao, onSalvar, onCance
   const [profissionais, setProfissionais] = useState([])
 
   useEffect(() => {
-    setClientes(listarClientes())
-    setProfissionais(listarProfissionais())
+    async function carregarOpcoes() {
+      const [listaClientes, listaProfissionais] = await Promise.all([
+        listarClientes(),
+        listarProfissionais()
+      ])
+      setClientes(listaClientes)
+      setProfissionais(listaProfissionais)
+    }
+    carregarOpcoes()
   }, [])
 
   useEffect(() => {
@@ -103,7 +110,6 @@ export default function AgendamentoForm({ agendamentoEmEdicao, onSalvar, onCance
           onChange={(e) => setDados((d) => ({ ...d, status: e.target.value }))}
         >
           <option value="pendente">Pendente</option>
-          <option value="confirmado">Confirmado</option>
           <option value="concluido">Concluído</option>
           <option value="cancelado">Cancelado</option>
         </select>

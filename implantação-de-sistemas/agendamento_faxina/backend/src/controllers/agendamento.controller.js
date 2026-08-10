@@ -1,26 +1,28 @@
-import * as agendamentoService from '../services/agendamento.service.js'
+import agendamentoService from '../services/agendamento.service.js'
 
-// GET /api/agendamentos?termo=...&ordenar=alfabetica|data
+
 export async function listar(req, res, next) {
   try {
     const { termo, ordenar } = req.query
 
     if (termo) {
-      return res.json(await agendamentoService.buscarAgendamentos(termo))
+      return 
+      res.json(await agendamentoService.buscarAgendamento(termo))
     }
     if (ordenar) {
-      return res.json(await agendamentoService.listarOrdenados(ordenar))
+      return 
+      res.json(await agendamentoService.listarOrdenados(ordenar))
     }
-    res.json(await agendamentoService.listarAgendamentos())
+    res.json(await agendamentoService.listarAgendamento())
   } catch (err) {
     next(err)
   }
 }
 
-// GET /api/agendamentos/proximos
+
 export async function proximos(req, res, next) {
   try {
-    res.json(await agendamentoService.proximosAgendamentos())
+    res.json(await agendamentoService.proximosAgendamento())
   } catch (err) {
     next(err)
   }

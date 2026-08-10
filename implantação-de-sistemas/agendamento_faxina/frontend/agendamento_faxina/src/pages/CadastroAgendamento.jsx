@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react'
 import SearchBar from '../components/SearchBar'
 import AgendamentoTable from '../components/AgendamentoTable'
@@ -16,31 +15,47 @@ export default function CadastroAgendamento() {
   const [termo, setTermo] = useState('')
   const [emEdicao, setEmEdicao] = useState(null)
   const [erro, setErro] = useState('')
+  const [carregando, setCarregando] = useState(true)
 
-  function recarregar() {
-    setAgendamentos(termo ? buscarAgendamentos(termo) : listarAgendamentos())
+  async function recarregar() {
+    setCarregando(true)
+    try {
+      const lista = termo ? await buscarAgendamentos(termo) : await listarAgendamentos()
+      setAgendamentos(lista)
+    } catch {
+      setErro('Não foi possível carregar')
+    } finally {
+      setCarregando(false)
+    }
   }
 
-  useEffect(recarregar, [termo])
+  useEffect(() => {
+    recarregar()
+  }, [termo])
 
-  function handleSalvar(dados) {
+  async function handleSalvar(dados) {
     setErro('')
     try {
       if (emEdicao) {
-        editarAgendamento(emEdicao.id, dados)
+        await editarAgendamento(emEdicao.id_agendamento, dados)
         setEmEdicao(null)
       } else {
-        criarAgendamento(dados)
+        await criarAgendamento(dados)
       }
-      recarregar()
+      await recarregar()
     } catch (err) {
       setErro(err.message)
     }
   }
 
-  function handleExcluir(id) {
-    excluirAgendamento(id)
-    recarregar()
+  async function handleExcluir(id) {
+    setErro('')
+    try {
+      await excluirAgendamento(id)
+      await recarregar()
+    } catch (err) {
+      setErro(err.message)
+    }
   }
 
   return (
@@ -56,11 +71,15 @@ export default function CadastroAgendamento() {
 
       <SearchBar valor={termo} onChange={setTermo} placeholder="Buscar por cliente, profissional ou tipo" />
 
-      <AgendamentoTable
-        agendamentos={agendamentos}
-        onEditar={setEmEdicao}
-        onExcluir={handleExcluir}
-      />
+      {carregando ? (
+        <p className="empty-state">Carregando...</p>
+      ) : (
+        <AgendamentoTable
+          agendamentos={agendamentos}
+          onEditar={setEmEdicao}
+          onExcluir={handleExcluir}
+        />
+      )}
     </div>
   )
 }

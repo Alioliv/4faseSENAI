@@ -12,8 +12,6 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }))
 
 app.use('/api', routes)
 
-// Precisa ser o último app.use — é o que captura os next(err)
-// vindos de qualquer controller.
 app.use(errorHandler)
 
 export default app

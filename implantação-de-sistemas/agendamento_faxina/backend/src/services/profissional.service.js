@@ -14,7 +14,7 @@ export async function buscarProfissionalPorId(id_profissional) {
 export async function criarProfissional(dados) {
   const { nome, telefone, especialidade, disponivel } = dados
   if (!nome || !telefone || !especialidade) {
-    throw new HttpError(400, 'Preencha todos os campos obrigatórios do profissional.')
+    throw new HttpError(400, 'Preencha todos os campos obrigatórios.')
   }
   return prisma.profissional.create({
     data: { nome, telefone, especialidade, disponivel: disponivel ?? true }
