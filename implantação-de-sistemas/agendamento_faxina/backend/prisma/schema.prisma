@@ -1,5 +1,3 @@
-
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -24,7 +22,6 @@ enum StatusAgendamento {
 model Cliente {
   id_cliente   Int         @id @default(autoincrement())
   nome         String      @db.VarChar(100)
-  email        String      @unique @db.VarChar(100)
   telefone     String      @db.VarChar(20)
   endereco     String      @db.VarChar(150)
   tipo_cliente TipoServico
@@ -48,6 +45,16 @@ model Profissional {
   @@map("Profissional")
 }
 
+model Usuario {
+  id_usuario Int      @id @default(autoincrement())
+  nome       String   @db.VarChar(100)
+  usuario    String   @unique @db.VarChar(50)
+  senha      String   @db.VarChar(100)
+  criado_em  DateTime @default(now())
+
+  @@map("Usuario")
+}
+
 model Agendamento {
   id_agendamento   Int               @id @default(autoincrement())
   id_cliente       Int
@@ -62,8 +69,9 @@ model Agendamento {
   cliente      Cliente      @relation(fields: [id_cliente], references: [id_cliente], onDelete: Cascade, onUpdate: Cascade)
   profissional Profissional @relation(fields: [id_profissional], references: [id_profissional], onDelete: Cascade, onUpdate: Cascade)
 
-  // Mesma regra da constraint uq_profissional_data_horario do banco
-  // (RF16 — reforçada também no service, ver agendamento.service.js).
+
+
+
   @@unique([id_profissional, data_agendamento, horario], name: "uq_profissional_data_horario")
   @@map("Agendamento")
 }

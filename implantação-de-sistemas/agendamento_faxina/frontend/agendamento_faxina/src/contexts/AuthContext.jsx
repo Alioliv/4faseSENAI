@@ -6,10 +6,16 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(authService.getUsuarioLogado())
 
-  function entrar(login, senha) {
-    const logado = authService.login(login, senha)
+  async function entrar(login, senha) {
+    const logado = await authService.login(login, senha)
     setUsuario(logado)
     return logado
+  }
+
+  async function cadastrar(nome, login, senha) {
+    const criado = await authService.cadastrar(nome, login, senha)
+    setUsuario(criado)
+    return criado
   }
 
   function sair() {
@@ -18,7 +24,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ usuario, entrar, sair }}>
+    <AuthContext.Provider value={{ usuario, entrar, cadastrar, sair }}>
       {children}
     </AuthContext.Provider>
   )

@@ -12,11 +12,11 @@ export async function buscarClientePorId(id_cliente) {
 }
 
 export async function criarCliente(dados) {
-  const { nome, email, telefone, endereco, tipo_cliente } = dados
-  if (!nome || !email || !telefone || !endereco || !tipo_cliente) {
+  const { nome, telefone, endereco, tipo_cliente } = dados
+  if (!nome || !telefone || !endereco || !tipo_cliente) {
     throw new HttpError(400, 'Preencha todos os campos obrigatórios do cliente.')
   }
-  return prisma.cliente.create({ data: { nome, email, telefone, endereco, tipo_cliente } })
+  return prisma.cliente.create({ data: { nome, telefone, endereco, tipo_cliente } })
 }
 
 export async function editarCliente(id_cliente, dados) {

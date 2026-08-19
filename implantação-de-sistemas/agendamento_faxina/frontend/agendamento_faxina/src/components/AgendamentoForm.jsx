@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react'
 import { listarClientes, listarProfissionais } from '../services/agendamentoService'
 
 const VAZIO = {
-  id_cliente: '',
-  id_profissional: '',
+  clienteNome: '',
+  clienteTelefone: '',
+  clienteEndereco: '',
+  profissionalNome: '',
+  profissionalTelefone: '',
   tipo_servico: '',
   data_agendamento: '',
   horario: '',
@@ -13,19 +16,20 @@ const VAZIO = {
 
 export default function AgendamentoForm({ agendamentoEmEdicao, onSalvar, onCancelar }) {
   const [dados, setDados] = useState(VAZIO)
-  const [clientes, setClientes] = useState([])
-  const [profissionais, setProfissionais] = useState([])
+  const [clientesExistentes, setClientesExistentes] = useState([])
+  const [profissionaisExistentes, setProfissionaisExistentes] = useState([])
+
 
   useEffect(() => {
-    async function carregarOpcoes() {
-      const [listaClientes, listaProfissionais] = await Promise.all([
+    async function carregarSugestoes() {
+      const [clientes, profissionais] = await Promise.all([
         listarClientes(),
         listarProfissionais()
       ])
-      setClientes(listaClientes)
-      setProfissionais(listaProfissionais)
+      setClientesExistentes(clientes)
+      setProfissionaisExistentes(profissionais)
     }
-    carregarOpcoes()
+    carregarSugestoes()
   }, [])
 
   useEffect(() => {
@@ -41,33 +45,70 @@ export default function AgendamentoForm({ agendamentoEmEdicao, onSalvar, onCance
   return (
     <form className="agendamento-form" onSubmit={handleSubmit}>
       <label>
-        Cliente
-        <select
-          value={dados.id_cliente}
-          onChange={(e) => setDados((d) => ({ ...d, id_cliente: e.target.value }))}
+        Nome do cliente
+        <input
+          type="text"
+          list="clientes-existentes"
+          value={dados.clienteNome}
+          onChange={(e) => setDados((d) => ({ ...d, clienteNome: e.target.value }))}
+          placeholder="Ex: Maria Souza"
           required
-        >
-          <option value="">Selecione</option>
-          {clientes.map((c) => (
-            <option key={c.id_cliente} value={c.id_cliente}>{c.nome} ({c.tipo_cliente})</option>
+        />
+        <datalist id="clientes-existentes">
+          {clientesExistentes.map((c) => (
+            <option key={c.id_cliente} value={c.nome} />
           ))}
-        </select>
+        </datalist>
       </label>
 
       <label>
-        Profissional
-        <select
-          value={dados.id_profissional}
-          onChange={(e) => setDados((d) => ({ ...d, id_profissional: e.target.value }))}
+        Telefone do cliente
+        <input
+          type="text"
+          value={dados.clienteTelefone}
+          onChange={(e) => setDados((d) => ({ ...d, clienteTelefone: e.target.value }))}
+          placeholder="(47) 99999-0000"
           required
-        >
-          <option value="">Selecione</option>
-          {profissionais.map((p) => (
-            <option key={p.id_profissional} value={p.id_profissional}>
-              {p.nome} ({p.especialidade}){!p.disponivel ? ' - indisponível' : ''}
-            </option>
+        />
+      </label>
+
+      <label className="obs-field">
+        Endereço do cliente
+        <input
+          type="text"
+          value={dados.clienteEndereco}
+          onChange={(e) => setDados((d) => ({ ...d, clienteEndereco: e.target.value }))}
+          placeholder="Rua das Flores, 123 - Joinville/SC"
+          required
+        />
+      </label>
+
+      <label>
+        Nome do profissional
+        <input
+          type="text"
+          list="profissionais-existentes"
+          value={dados.profissionalNome}
+          onChange={(e) => setDados((d) => ({ ...d, profissionalNome: e.target.value }))}
+          placeholder="Ex: Ana Ferreira"
+          required
+        />
+        <datalist id="profissionais-existentes">
+          {profissionaisExistentes.map((p) => (
+            <option key={p.id_profissional} value={p.nome} />
           ))}
-        </select>
+        </datalist>
+      </label>
+
+      <label>
+        Telefone do profissional
+        <input
+          type="text"
+          value={dados.profissionalTelefone}
+          onChange={(e) => setDados((d) => ({ ...d, profissionalTelefone: e.target.value }))}
+          placeholder="(47) 98888-0000"
+          required
+        />
       </label>
 
       <label>
@@ -110,6 +151,7 @@ export default function AgendamentoForm({ agendamentoEmEdicao, onSalvar, onCance
           onChange={(e) => setDados((d) => ({ ...d, status: e.target.value }))}
         >
           <option value="pendente">Pendente</option>
+          <option value="confirmado">Confirmado</option>
           <option value="concluido">Concluído</option>
           <option value="cancelado">Cancelado</option>
         </select>

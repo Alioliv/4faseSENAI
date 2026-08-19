@@ -1,11 +1,27 @@
-const USUARIO_TESTE = { id: 1, nome: 'Administrador', usuario: 'admin', senha: '1234' }
+import api from '../api/axiosConfig'
 
-export function login(usuario, senha) {
-  if (usuario !== USUARIO_TESTE.usuario || senha !== USUARIO_TESTE.senha) {
-    throw new Error('Usuário ou senha inválidos.')
+function mensagemErro(err, fallback) {
+  return err.response?.data?.erro || fallback
+}
+
+export async function login(usuario, senha) {
+  try {
+    const { data } = await api.post('/auth/login', { usuario, senha })
+    localStorage.setItem('faxina_sessao', JSON.stringify(data))
+    return data
+  } catch (err) {
+    throw new Error(mensagemErro(err, 'Usuário ou senha inválidos.'))
   }
-  localStorage.setItem('faxina_sessao', JSON.stringify(USUARIO_TESTE))
-  return USUARIO_TESTE
+}
+
+export async function cadastrar(nome, usuario, senha) {
+  try {
+    const { data } = await api.post('/auth/cadastro', { nome, usuario, senha })
+    localStorage.setItem('faxina_sessao', JSON.stringify(data))
+    return data
+  } catch (err) {
+    throw new Error(mensagemErro(err, 'Não foi possível cadastrar o usuário.'))
+  }
 }
 
 export function logout() {

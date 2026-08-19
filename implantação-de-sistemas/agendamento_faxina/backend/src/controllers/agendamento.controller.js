@@ -1,4 +1,4 @@
-import agendamentoService from '../services/agendamento.service.js'
+import * as agendamentoService from '../services/agendamento.service.js'
 
 
 export async function listar(req, res, next) {
@@ -6,23 +6,21 @@ export async function listar(req, res, next) {
     const { termo, ordenar } = req.query
 
     if (termo) {
-      return 
-      res.json(await agendamentoService.buscarAgendamento(termo))
+      return res.json(await agendamentoService.buscarAgendamentos(termo))
     }
     if (ordenar) {
-      return 
-      res.json(await agendamentoService.listarOrdenados(ordenar))
+      return res.json(await agendamentoService.listarOrdenados(ordenar))
     }
-    res.json(await agendamentoService.listarAgendamento())
+    res.json(await agendamentoService.listarAgendamentos())
   } catch (err) {
     next(err)
   }
 }
 
-
+// GET /api/agendamentos/proximos
 export async function proximos(req, res, next) {
   try {
-    res.json(await agendamentoService.proximosAgendamento())
+    res.json(await agendamentoService.proximosAgendamentos())
   } catch (err) {
     next(err)
   }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, Navigate } from 'react-router-dom'
+import { useNavigate, Navigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function Login() {
@@ -8,27 +8,40 @@ export default function Login() {
   const [login, setLogin] = useState('')
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
+  const [carregando, setCarregando] = useState(false)
 
   if (usuario) return <Navigate to="/" replace />
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
+    setErro('')
+    setCarregando(true)
     try {
-      entrar(login, senha)
+      await entrar(login, senha)
       navigate('/')
     } catch (err) {
       setErro(err.message)
+    } finally {
+      setCarregando(false)
     }
   }
 
   return (
-    <div className="login-page">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h2>Login</h2>
+    <div className="auth-page">
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <h2>Entrar</h2>
+        <p className="auth-subtitle">Acesse com seu usuário e senha</p>
+
         {erro && <p className="alert-error">{erro}</p>}
+
         <label>
           Usuário
-          <input value={login} onChange={(e) => setLogin(e.target.value)} required />
+          <input
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
+            autoFocus
+            required
+          />
         </label>
         <label>
           Senha
@@ -39,8 +52,14 @@ export default function Login() {
             required
           />
         </label>
-        <button type="submit">Entrar</button>
-        <p className="login-hint">Usuário de teste: admin / 1234</p>
+
+        <button type="submit" disabled={carregando}>
+          {carregando ? 'Entrando...' : 'Entrar'}
+        </button>
+
+        <p className="auth-hint">
+          Não tem conta? <Link to="/cadastro-usuario">Cadastre-se</Link>
+        </p>
       </form>
     </div>
   )
